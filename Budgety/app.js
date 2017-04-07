@@ -8,13 +8,13 @@
 var budgetController = (function () {
     function Expense(id, description, value) {
         this.id = id;
-        this.expenseDescription = description;
+        this.description = description;
         this.value = value;
     }
 
     function Income(id, description, value) {
         this.id = id;
-        this.expenseDescription = description;
+        this.description = description;
         this.value = value;
     }
 
@@ -64,7 +64,9 @@ var uiController = (function () {
         expenseType: '.add__type',
         expenseDescription: '.add__description',
         expenseValue: '.add__value',
-        addExpenseBtn: '.add__btn'
+        addExpenseBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expenseContainer: '.expenses__list'
     }
 
     return {
@@ -79,15 +81,29 @@ var uiController = (function () {
             return DOMStrings;
         },
         addListItem: function (obj, type) {
-            var html;
+            var html, newHhtml, element;
             //Create HTML string with placeholder
-            if (type === 'inc')
-                html = '<div class="item clearfix" id="income-0"><div class="item__description">Salary</div><div class="right clearfix"><div class="item__value">+ 2,100.00</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
-            else
-                html = '<div class="item clearfix" id="income-1"><div class="item__description">Sold car</div><div class="right clearfix"><div class="item__value">+ 1,500.00</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>;'
+            if (type === 'inc') {
+                element = DOMStrings.incomeContainer;
+                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            } else {
+                element = DOMStrings.expenseContainer;
+                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            }
             //Replace the placeholder text with some actula data - which is the data tat we recieve from obj
-
+            newHhtml = html.replace('%id%', obj.id);
+            newHhtml = newHhtml.replace('%description%', obj.description);
+            newHhtml = newHhtml.replace('%value%', obj.value);
             //Insert HTML into DOM
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHhtml);
+        },
+        clearInputs: function () {
+            var inputs = document.querySelectorAll(DOMStrings.expenseValue + ',' + DOMStrings.expenseDescription);
+            //Use slice of prototype to convert NodeList to normal arrya
+            inputs = Array.prototype.slice.call(inputs);
+            inputs.forEach(function (input, index, arr) {
+                input.value = '';
+            })
         }
     }
 })();
@@ -114,8 +130,9 @@ var appController = (function (budgetCtrl, uiCtrl) {
 
         //2. Add the item to budget list
         newItem = budgetCtrl.addItem(input.type, input.description, input.value)
-        //3. Add thenew item to interface
 
+        //3. Add the new item to interface
+        uiCtrl.addListItem(newItem, input.type)
         //4. Calculate the budget
 
         //5. Need to display the budget
