@@ -3,6 +3,12 @@
 //Modules - place peices of code related to one another inside of one independet unit
 //Data encapsulaton- Hide implementation details from specific modules and only expose specific functionality - which are called apis
 //SOC - each part of the application should only be interested in doing one thing independently
+//Event Delegation - Event Bubbling - use cases
+//---When we have an element with lots of child elements then add event listener on parent and use target to figure out who
+//fired event 
+//---When we want event handler to be attached to an element which is not part of the dom now and will be available in DOM
+//in later point of time - then assign event handler on parent element
+
 
 //Data manipulation
 var budgetController = (function () {
@@ -27,8 +33,24 @@ var budgetController = (function () {
         totals: {
             exp: 0,
             inc: 0
-        }
+        },
+        budget: 0,
+        percentage: -1
     };
+
+    function calculateTotal(type) {
+        var sum = 0;
+        data.allItems[type].forEach(function (cur) {
+            sum = sum + cur.value;
+        });
+        console.log('totoals - ' + type, sum);
+        // data.totals[type] = sum;
+        if (type === 'exp')
+            data.totals.exp = sum;
+        else
+            data.totals.inc = sum;
+        // console.log(data);
+    }
 
     return {
         addItem: function (type, desc, val) {
@@ -51,6 +73,28 @@ var budgetController = (function () {
         },
         testing: function () {
             console.log(data);
+        },
+        calculateBudget: function () {
+            //Calculate total income and expenses
+            calculateTotal('exp');
+            calculateTotal('inc');
+
+            //Calculate the budget income and expenses            
+            data.budget = data.totals.inc = data.totals.exp;
+
+            //Calculate the total income that we spent
+            if (data.totals.inc > 0)
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            else
+                data.percentage = -1;
+        },
+        getBudget: function () {
+            return {
+                budget: data.budget,
+                totalExp: data.totals.exp,
+                totalInc: data.totals.inc,
+                percentage: data.percentage
+            }
         }
     }
 
@@ -66,7 +110,11 @@ var uiController = (function () {
         expenseValue: '.add__value',
         addExpenseBtn: '.add__btn',
         incomeContainer: '.income__list',
-        expenseContainer: '.expenses__list'
+        expenseContainer: '.expenses__list',
+        budgteLAbel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: '.budget__expenses--value',
+        percentageLAbel: '.budget__income--percentage'
     }
 
     return {
@@ -74,7 +122,7 @@ var uiController = (function () {
             return {
                 type: document.querySelector(DOMStrings.expenseType).value,
                 description: document.querySelector(DOMStrings.expenseDescription).value,
-                value: document.querySelector(DOMStrings.expenseValue).value
+                value: parseFloat(document.querySelector(DOMStrings.expenseValue).value)
             }
         },
         getDOMStrings: function () {
@@ -104,6 +152,15 @@ var uiController = (function () {
             inputs.forEach(function (input, index, arr) {
                 input.value = '';
             })
+        },
+        displayBudget: function (obj) {
+            document.querySelector(DOMStrings.budgteLAbel).textContent = obj.budget;
+            document.querySelector(DOMStrings.incomeLabel).textContent = obj.inc;
+            document.querySelector(DOMStrings.expensesLabel).textContent = obj.exp;
+            if (obj.percentage > 0)
+                document.querySelector(DOMStrings.percentageLAbel).textContent = obj.percentage;
+            else
+                document.querySelector(DOMStrings.percentageLAbel).textContent = '---';
         }
     }
 })();
@@ -123,7 +180,7 @@ var appController = (function (budgetCtrl, uiCtrl) {
         })
     }
     var ctrlAddItemToList = function () {
-        var input, newIteml
+        var input, newItem
 
         //1. Get the field input Data
         input = uiCtrl.getInput();
@@ -131,16 +188,51 @@ var appController = (function (budgetCtrl, uiCtrl) {
         //2. Add the item to budget list
         newItem = budgetCtrl.addItem(input.type, input.description, input.value)
 
-        //3. Add the new item to interface
-        uiCtrl.addListItem(newItem, input.type)
-        //4. Calculate the budget
+        if (newItem.description !== '' && !isNaN(newItem.value) && input.value > 0) {
 
-        //5. Need to display the budget
+            //3. Add the new item to interface
+            uiCtrl.addListItem(newItem, input.type)
+
+            //4. Clear Input fields
+            uiCtrl.clearInputs();
+
+            //5. Update budget
+            updateBudget()
+        }
     }
+
+    function updateBudget() {
+        var budget;
+        //Calculate the budget
+        budgetCtrl.calculateBudget();
+
+        //Return the budget
+        budget = budgetCtrl.getBudget();
+
+        budget = {
+            budget: 2800,
+            exp: 1200,
+            inc: 4000,
+            percentage: 30
+        }
+
+        //Update UI
+        uiController.displayBudget(budget);
+
+    }
+
+
+
 
     return {
         init: function () {
             console.log('App has started.');
+            uiCtrl.displayBudget({
+                budget: 0,
+                exp: 0,
+                inc: 0,
+                percentage: -1
+            });
             setUpEventListeners();
         }
     }
