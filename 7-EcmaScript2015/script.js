@@ -237,10 +237,117 @@
 //!!!
 //Default parameters - one or more functions parameter to have default parameters
 ///!!!
-function Person(name, nationality = 'India') {
+// function Person(name, nationality = 'India') {
+//     this.name = name;
+//     this.nationality = nationality;
+// }
+
+// var manju = new Person('Manjuanand');
+// console.log(manju);
+
+
+//!!!
+//Maps
+//!!!
+// let questions = new Map();
+// questions.set('q1', 'What is your name?')
+// questions.set(1, 'Manju');
+// questions.set(true, 'Toladinni');
+// console.log(questions);
+// //get an item
+// console.log(questions.get(true));
+// //remove an item from Map
+// questions.delete(1);
+// //HAs method
+// if (questions.has(true))
+//     questions.delete(true);
+// console.log(questions);
+//CLear everything from map
+// questions.clear();
+// console.log(questions);
+
+//iterate over maps
+// questions.forEach((val, key) => {
+//     console.log(val);
+//     console.log(key);
+// });
+//for of for maps
+// for (let [key, value] of questions.entries()) {
+//     console.log(key);
+//     console.log(value);
+// }
+//Why maps are better than objects
+//-- we can use anything as key
+//-- maps are iterable
+//--size of map sing size property
+//--easily add and remove items, its easy to build hash maps
+
+//!!!
+///Classes
+//Class definitions are not hoisted
+//We can only add methods to class not properties
+//!!!
+//ES5
+// function Person(name, age, job, designation) {
+//     this.name = name;
+//     this.age = age;
+//     this.job = job;
+//     this.designation = designation;
+// }
+
+// Person.prototype.displayInfo = function () {
+//     console.log(`I am ${this.name} of age ${this.age}. and my job is ${this.job} and designation ${this.designation}`);
+// }
+
+// var manju = new Person('Manjuanand', 29, 'Software Engineer', 'Technical Lead');
+// manju.displayInfo();
+
+// //ES6
+// class PersonClass {    
+//     constructor(name, age, job, designation) {
+//         this.name = name;
+//         this.age = age;
+//         this.job = job;
+//         this.designation = designation;
+//     }
+//     displayInfo() {
+//         console.log(`I am ${this.name} of age ${this.age}. and my job is ${this.job} and designation ${this.designation}`);
+//     }
+
+//     static greeting() {
+//         console.log('Hellooss');
+//     }
+// }
+// var manju6 = new PersonClass('Manjuanand', 29, 'Software Engineer', 'Technical Lead');
+// // manju6.displayInfo();
+// console.log(manju6);
+// PersonClass.greeting();
+
+
+
+//!!!
+//Inheritance
+//!!!
+
+//ES5
+function Person(name, age) {
     this.name = name;
-    this.nationality = nationality;
+    this.age = age;
+}
+Person.prototype.sayHello = function () {
+    console.log(this.name);
 }
 
-var manju = new Person('Manjuanand');
-console.log(manju);
+function Employee(name, age, id, designation) {
+    Person.call(this, name, age);
+    this.designation = designation;
+    this.id = id;
+}
+
+Employee.prototype = Object.create(Person.prototype);
+Employee.prototype.something = function () {
+    console.log('loll');
+}
+const emp1 = new Employee('Manjuanand', 29, 130708, 'TL');
+console.log(emp1);
+emp1.sayHello();
