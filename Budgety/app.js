@@ -52,6 +52,12 @@ var budgetController = (function () {
         // console.log(data);
     }
 
+    function deleteItem(type, id) {
+        data.allItems[type] = data.allItems[type].map(function (item) {
+            return item.id === id;
+        });
+    }
+
     return {
         addItem: function (type, desc, val) {
             var newItem, ID;
@@ -97,9 +103,6 @@ var budgetController = (function () {
             }
         }
     }
-
-
-
 })();
 
 //UI view updates and other things
@@ -114,7 +117,8 @@ var uiController = (function () {
         budgteLAbel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLAbel: '.budget__income--percentage'
+        percentageLAbel: '.budget__income--percentage',
+        container: '.container'
     }
 
     return {
@@ -177,7 +181,8 @@ var appController = (function (budgetCtrl, uiCtrl) {
             if (event.keyCode === 13 || event.which === 13) {
                 ctrlAddItemToList();
             }
-        })
+        });
+        document.querySelector(domStrings.container).addEventListener('click', ctrlDeleteItem);
     }
     var ctrlAddItemToList = function () {
         var input, newItem
@@ -221,9 +226,17 @@ var appController = (function (budgetCtrl, uiCtrl) {
 
     }
 
+    function ctrlDeleteItem(event) {
+        var itemID;
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        if (itemID) {
+            //Delete the item from datasiurce
 
+            //Delete the item from UI
 
-
+            //Update and show new budget
+        }
+    }
     return {
         init: function () {
             console.log('App has started.');
