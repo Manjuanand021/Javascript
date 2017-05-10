@@ -4,3 +4,4 @@ var name = 'Manjuanand';
     console.log(name);
 })();
 console.log(name);
+console.log(name);
