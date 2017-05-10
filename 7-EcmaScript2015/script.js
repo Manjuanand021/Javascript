@@ -330,24 +330,141 @@
 //!!!
 
 //ES5
-function Person(name, age) {
-    this.name = name;
-    this.age = age;
-}
-Person.prototype.sayHello = function () {
-    console.log(this.name);
+// function Person(name, age) {
+//     this.name = name;
+//     this.age = age;
+// }
+// Person.prototype.sayHello = function () {
+//     console.log(this.name);
+// }
+
+// function Employee(name, age, id, designation) {
+//     Person.call(this, name, age);
+//     this.designation = designation;
+//     this.id = id;
+// }
+
+// Employee.prototype = Object.create(Person.prototype);
+// Employee.prototype.something = function () {
+//     console.log('loll');
+// }
+// const emp1 = new Employee('Manjuanand', 29, 130708, 'TL');
+// console.log(emp1);
+// emp1.sayHello();
+
+
+//ES6
+// class Person {
+//     constructor(name, age) {
+//         this.name = name;
+//         this.age = age;
+//     }
+//     sayHello() {
+//         console.log(this.name);
+//     }
+// }
+
+// class Employee extends Person {
+//     constructor(name, age, id, designation) {
+//         super(name, age);
+//         this.designation = designation;
+//         this.id = id;
+//     }
+//     something() {
+//         console.log('loll');
+//     }
+// }
+
+// const emp1 = new Employee('Manjuanand', 29, 130708, 'TL');
+// console.log(emp1);
+// emp1.sayHello();
+// emp1.something();
+
+//!!!
+//Exercise
+//!!!
+class Element {
+    constructor(name, buildYear) {
+        this.name = name;
+        this.buildYear = buildYear;
+    }
 }
 
-function Employee(name, age, id, designation) {
-    Person.call(this, name, age);
-    this.designation = designation;
-    this.id = id;
+class Park extends Element {
+    constructor(name, buildYear, area, nnumOfTrees) {
+        super(name, buildYear);
+        this.area = area;
+        this.nnumOfTrees = nnumOfTrees;
+    }
+    treeDensity() {
+        const density = this.nnumOfTrees / this.area;
+        console.log(`${this.name} has density ${density} per square km.`);
+    }
 }
 
-Employee.prototype = Object.create(Person.prototype);
-Employee.prototype.something = function () {
-    console.log('loll');
+class Street extends Element {
+    constructor(name, buildYear, length, size = 3) {
+        super(name, buildYear);
+        this.length = length;
+        this.size = size;
+    }
+
+    classifyStreet() {
+        const classification = new Map();
+        classification.set(1, 'tiny');
+        classification.set(2, 'small');
+        classification.set(3, 'normal');
+        classification.set(4, 'big');
+        classification.set(5, 'huge');
+        console.log(`${this.name}, built in ${this.buildYear} is a ${classification.get(this.size)}`);
+    }
 }
-const emp1 = new Employee('Manjuanand', 29, 130708, 'TL');
-console.log(emp1);
-emp1.sayHello();
+
+const allParks = [
+    new Park('Green Park', 1987, 0.2, 215),
+    new Park('National Park', 1892, 2.9, 3541),
+    new Park('Oak Park', 1953, 0.5, 949)
+];
+
+const allStreets = [
+    new Street('New Avenue', 1999, 1.1, 4),
+    new Street('Evergreen Street', 2007, 2.1),
+    new Street('Sunset Boulevard', 1999, 4.5, 5)
+]
+
+function calc(arr) {
+    const sum = arr.reduce((prev, cur, index) => prev + cur, 0);
+    return [sum, sum / arr.length];
+}
+
+function reportParks(parks) {
+    console.log(`------------Park Report-------------`);
+    //Density
+    parks.forEach((cur) => {
+        cur.treeDensity();
+    })
+    //Average age
+    const ages = parks.map((cur) => {
+        return (new Date).getFullYear() - cur.buildYear;
+    });
+
+    const [totalAge, averageAge] = calc(ages);
+    console.log(`Average age- ${averageAge}, total age - ${totalAge}`);
+
+    //Which parks have more thna 1000 trees
+    // for (const cur of parks) {
+    //     if (cur.nnumOfTrees > 1000)
+    //         console.log(`${cur.name} has more than 1000 trees`);
+    // }
+
+    // const index = parks.map(el => el.nnumOfTrees).findIndex(el => el >= 1000);
+    // console.log(index);
+    console.log(parks[parks.findIndex(el => el.nnumOfTrees >= 1000)].name);
+}
+
+function reportStreets(s) {
+
+}
+
+reportParks(allParks);
+reportStreets(allStreets);
