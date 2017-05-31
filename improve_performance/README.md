@@ -1,0 +1,1 @@
+### Referred - https://scotch.io/tutorials/improve-the-performance-of-your-javascript-web-application
